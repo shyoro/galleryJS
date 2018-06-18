@@ -25,5 +25,4 @@ describe(`Unit test on renderer functions`, () => {
     expect(renderer._dateTaken(`2018-06-17T18:56:18Z`)).toBeTruthy();
     expect(renderer._dateTaken(undefined)).toBeFalsy();
   });
-
 });

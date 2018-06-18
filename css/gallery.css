@@ -4,9 +4,8 @@ body {
     background-color: #eee;
 }
 
-#GALLERY .gl-widget {
+.gl-widget {
     display: flex;
-    /*display: inline-block;*/
     border: 1px solid #ddd;
     flex-wrap: wrap;
     flex-flow: row wrap;
@@ -15,7 +14,7 @@ body {
 
 }
 
-#GALLERY .gl-widget img {
+.gl-widget img {
     border: 1px solid #ddd;
     border-radius: 4px;
     padding: 5px;
@@ -23,7 +22,7 @@ body {
     transition: transform .2s;
 }
 
-#GALLERY .gl-item-txt-link {
+.gl-item-txt-link {
     display: block;
     text-overflow: ellipsis;
     float: inherit;
@@ -31,12 +30,12 @@ body {
     padding-left: 2px;
 }
 
-#GALLERY .gl-widget img:hover {
+.gl-widget img:hover {
     box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
     transform: scale(1.5);
 }
 
-#GALLERY .gl-widget a {
+.gl-widget a {
     padding: 10px;
     color: black;
     text-decoration: none;
@@ -45,19 +44,19 @@ body {
     font-size: 15px;
 }
 
-#GALLERY .gl-widget a:hover {
+.gl-widget a:hover {
     color: rgba(0, 140, 186, 0.5);
 }
 
-#GALLERY .gl-widget-item {
+.gl-widget-item {
     width: 25%;
 }
 
-#GALLERY .gl-item-author {
+.gl-item-author {
     display: block;
 }
 
-#GALLERY .gl-item-date {
+.gl-item-date {
     display: block;
     font-size: 15px;
     padding: 0px 10px;
@@ -65,17 +64,7 @@ body {
 }
 
 @media screen and (max-width: 500px) {
-
-    body {
-        background-color: blue;
+    .gl-widget-item {
+        width: 100%;
     }
-
-    /*#GALLERY .gl-widget-item {*/
-    /*width: 100%;*/
-    /*flex-grow: 1;*/
-    /*flex: auto;*/
-    /*align-items: center;*/
-    /*justify-content: center;*/
-    /*!*border: 1px solid;*!*/
-    /*}*/
 }

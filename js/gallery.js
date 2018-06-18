@@ -92,16 +92,18 @@ class Renderer {
   _link(link) {
     const a = document.createElement('a');
     a.setAttribute('href', link);
+    a.setAttribute('target', '_blank');
     return a;
   }
 
   _author(authorStr) {
     const link = document.createElement('a');
     const author = this._parseAuthorString(authorStr);
-
+    link.setAttribute('href', `#${author}`);
     link.innerText = `${author}`;
     link.classList.add('gl-item-author');
-    link.addEventListener('click', this._filterByAuthor.bind(this, this._res, author));
+    link.addEventListener('click', this._filterByAuthor.bind(this, author));
+
     return link;
   }
 
@@ -109,7 +111,7 @@ class Renderer {
     if (authorStr !== undefined) {
       const regExp = `"(.*?)"`;
       const matches = authorStr.match(regExp);
-      return (matches !== null) ? matches[0].replace(`"`,``).slice(0,-1): authorStr;
+      return (matches !== null) ? matches[0].replace(`"`, ``).slice(0, -1) : authorStr;
     }
 
     return 'Unknown authors';
@@ -129,25 +131,30 @@ class Renderer {
   _parseDateString(dateTakenStr) {
     if (dateTakenStr !== undefined) {
       const date = new Date(dateTakenStr);
-      const day =('0' + date.getDate()).slice (-2);
-      const month =('0' + (date.getMonth() + 1)).slice (-2);
+      const day = ('0' + date.getDate()).slice(-2);
+      const month = ('0' + (date.getMonth() + 1)).slice(-2);
       const year = date.getFullYear();
-      return`${day}.${month}.${year}`;
+      return `${day}.${month}.${year}`;
     }
     return `Unknown Date`;
   }
 
-  _filterByAuthor(res, author) {
-    res.items = res.items.filter((item) => {
+  _filterByAuthor(author) {
+    this._res.items = this._res.items.filter((item) => {
       return item.author.indexOf(author) !== -1;
     });
 
-    this.container.innerHTML = ``;
-    this.render(res);
+    window.addEventListener('hashchange', this._hasChange.bind(this));
+  }
 
-    // let url = new URL(window.location.href);
-    // url.searchParams.set('author', author);
-    // document.location.pathname =  url;
+  _hasChange() {
+    this.container.innerHTML = ``;
+    if (!window.location.href.includes(`#`)) {
+      let flickerResponse = localStorage.getItem('flickerResponse');
+      this.render(JSON.parse(flickerResponse)); // load the original res object
+    } else {
+      this.render(this._res);// load only the author res object
+    }
   }
 
 }
@@ -160,6 +167,7 @@ class Gallery {
 
   init() {
     this.flickerApi.getAllImages().then((res) => {
+      localStorage.setItem('flickerResponse', JSON.stringify(res));
       this.renderService.render(res);
     });
   }
