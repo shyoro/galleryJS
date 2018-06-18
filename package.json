@@ -1,0 +1,11 @@
+{
+  "name": "json-lint-express",
+  "preferGlobal": true,
+  "version": "0.0.1",
+  "author": "sazulay@outbrain.com",
+  "description": "",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^23.1.0"
+  }
+}

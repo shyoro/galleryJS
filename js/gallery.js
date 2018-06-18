@@ -1,0 +1,162 @@
+class JsonpService {
+  constructor() {
+  }
+
+  call(url, callback) {
+    window.jsonpCallback = callback;
+    const script = document.createElement('script');
+    script.src = url + '&jsoncallback=jsonpCallback';
+    document.body.appendChild(script)
+  }
+}
+
+class FlickerApi {
+  constructor(jsonpService) {
+    this.FLICKER_URL = 'http://api.flickr.com/services/feeds/photos_public.gne?tagmode=any&format=json';
+    this.jsonpService = jsonpService;
+  }
+
+  getAllImages() {
+    return new Promise((resolve, reject) => {
+      this.jsonpService.call(this.FLICKER_URL, (res) => {
+        resolve(res);
+      });
+    });
+  }
+}
+
+class Renderer {
+
+  constructor() {
+    this.container = document.getElementById('GALLERY');
+  }
+
+  render(res) {
+    this._res = res;
+    this._title();
+    this._generateWidget();
+  }
+
+  _generateWidget() {
+    const div = document.createElement('div');
+    div.classList.add('gl-widget');
+
+    const items = this._res.items || [];
+    items.forEach((item, index) => {
+      const ul = document.createElement('ul');
+      const divItem = document.createElement('div');
+      divItem.classList.add('gl-widget-item');
+
+      ul.classList.add('gl-widget-index-' + index);
+
+      const link = this._link(item.link);
+      ul.appendChild(link);
+
+      link.appendChild(this._itemTitle(item.title));
+      link.appendChild(this._image(item.media.m, index));
+      divItem.appendChild(link);
+      divItem.appendChild(this._author(item.author));
+      divItem.appendChild(this._dateTaken(item.date_taken));
+      div.appendChild(divItem);
+    });
+
+    this.container.appendChild(div);
+  }
+
+  _image(imageSrc, index) {
+    const img = document.createElement('img');
+    img.classList.add('gl-image');
+    img.classList.add('gl-img-' + index);
+    img.setAttribute('src', imageSrc);
+    return img
+  }
+
+  _title() {
+    let node = document.createElement('p');
+    let textNode = document.createTextNode(this._res.title || 'No Images');
+    node.appendChild(textNode);
+    this.container.appendChild(node);
+  }
+
+  _itemTitle(title) {
+    const para = document.createElement('p');
+    const text = title || 'Images From Flicker';
+    para.innerText = `${text}`;
+    para.classList.add('gl-item-txt-link');
+    return para;
+  }
+
+  _link(link) {
+    const a = document.createElement('a');
+    a.setAttribute('href', link);
+    return a;
+  }
+
+  _author(authorStr) {
+    const link = document.createElement('a');
+
+    let author = 'Unknown authors';
+
+    if (authorStr !== undefined) {
+      const regExp = `(["])(?:(?=(\\\\?))\\2.)*?\\1`;
+      author = authorStr.match(regExp)[0];
+      author = author.substr(1, author.length - 2)
+    }
+
+    link.innerText = `${author}`;
+    link.classList.add('gl-item-author');
+    link.addEventListener('click', this._filterByAuthor.bind(this, this._res, author));
+    return link;
+  }
+
+  _dateTaken(dateTakenStr) {
+    const para = document.createElement('p');
+    para.classList.add('gl-item-date');
+
+    if (dateTakenStr !== undefined) {
+      const date = new Date(dateTakenStr);
+      const day =('0' + date.getDate()).slice (-2);
+      const month =('0' + (date.getMonth() + 1)).slice (-2);
+      const year = date.getFullYear();
+      para.innerText = `${day}.${month}.${year}`;
+      return para;
+    }
+
+    para.innerText = `Unknown Date`;
+    return para;
+  }
+
+  _filterByAuthor(res, author) {
+    res.items = res.items.filter((item) => {
+      return item.author.indexOf(author) !== -1;
+    });
+
+    this.container.innerHTML = ``;
+    this.render(res);
+
+    // let url = new URL(window.location.href);
+    // url.searchParams.set('author', author);
+    // document.location.pathname =  url;
+  }
+
+}
+
+class Gallery {
+  constructor(flickerApi, renderService) {
+    this.flickerApi = flickerApi;
+    this.renderService = renderService;
+  }
+
+  init() {
+    this.flickerApi.getAllImages().then((res) => {
+      this.renderService.render(res);
+    });
+  }
+}
+
+const jsonpService = new JsonpService();
+const flickerApi = new FlickerApi(jsonpService);
+const renderer = new Renderer();
+const gallery = new Gallery(flickerApi, renderer);
+
+gallery.init();
