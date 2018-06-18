@@ -5,6 +5,9 @@
   "author": "sazulay@outbrain.com",
   "description": "",
   "license": "MIT",
+  "scripts": {
+    "test": "jest"
+  },
   "devDependencies": {
     "jest": "^23.1.0"
   }

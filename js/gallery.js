@@ -64,6 +64,9 @@ class Renderer {
   }
 
   _image(imageSrc, index) {
+    if (imageSrc === undefined || index === undefined) {
+      return undefined
+    }
     const img = document.createElement('img');
     img.classList.add('gl-image');
     img.classList.add('gl-img-' + index);
@@ -94,14 +97,7 @@ class Renderer {
 
   _author(authorStr) {
     const link = document.createElement('a');
-
-    let author = 'Unknown authors';
-
-    if (authorStr !== undefined) {
-      const regExp = `(["])(?:(?=(\\\\?))\\2.)*?\\1`;
-      author = authorStr.match(regExp)[0];
-      author = author.substr(1, author.length - 2)
-    }
+    const author = this._parseAuthorString(authorStr);
 
     link.innerText = `${author}`;
     link.classList.add('gl-item-author');
@@ -109,21 +105,36 @@ class Renderer {
     return link;
   }
 
+  _parseAuthorString(authorStr) {
+    if (authorStr !== undefined) {
+      const regExp = `"(.*?)"`;
+      const matches = authorStr.match(regExp);
+      return (matches !== null) ? matches[0].replace(`"`,``).slice(0,-1): authorStr;
+    }
+
+    return 'Unknown authors';
+  }
+
   _dateTaken(dateTakenStr) {
+    if (dateTakenStr === undefined) {
+      return undefined;
+    }
+
     const para = document.createElement('p');
     para.classList.add('gl-item-date');
+    para.innerText = this._parseDateString(dateTakenStr);
+    return para;
+  }
 
+  _parseDateString(dateTakenStr) {
     if (dateTakenStr !== undefined) {
       const date = new Date(dateTakenStr);
       const day =('0' + date.getDate()).slice (-2);
       const month =('0' + (date.getMonth() + 1)).slice (-2);
       const year = date.getFullYear();
-      para.innerText = `${day}.${month}.${year}`;
-      return para;
+      return`${day}.${month}.${year}`;
     }
-
-    para.innerText = `Unknown Date`;
-    return para;
+    return `Unknown Date`;
   }
 
   _filterByAuthor(res, author) {
@@ -158,5 +169,9 @@ const jsonpService = new JsonpService();
 const flickerApi = new FlickerApi(jsonpService);
 const renderer = new Renderer();
 const gallery = new Gallery(flickerApi, renderer);
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+  module.exports = renderer;
+}
 
 gallery.init();
