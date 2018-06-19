@@ -1,0 +1,1 @@
+window['GLRY'] = gallery.init();

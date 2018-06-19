@@ -1,4 +1,4 @@
-const renderer = require('../js/gallery');
+const renderer = require('../js/renderer');
 
 
 describe(`Unit test on renderer functions`, () => {
