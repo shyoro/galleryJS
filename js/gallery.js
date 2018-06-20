@@ -7,7 +7,7 @@ class Gallery {
   init() {
     this.flickerApi.getAllImages().then((res) => {
       localStorage.setItem('flickerResponse', JSON.stringify(res));
-      this.renderService.render(res);
+      this.renderService.render(res, this.getImagesByAuthor.bind(this));
     });
   }
 
@@ -17,5 +17,3 @@ class Gallery {
     })
   }
 }
-
-const gallery = new Gallery(flickerApi, renderer);

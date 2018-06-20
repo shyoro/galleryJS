@@ -8,5 +8,3 @@ class JsonpService {
     document.body.appendChild(script)
   }
 }
-
-const jsonpService = new JsonpService();

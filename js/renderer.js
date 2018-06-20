@@ -11,40 +11,33 @@ class Renderer {
   }
 
   _generateWidget() {
-    const div = document.createElement('div');
-    div.classList.add('gl-widget');
+    const widgetContainer = document.createElement('div');
+    widgetContainer.classList.add('gl-widget');
 
     const items = this._res.items || [];
     items.forEach((item, index) => {
-      const ul = document.createElement('ul');
-      const divItem = document.createElement('div');
-      divItem.classList.add('gl-widget-item');
-
-      ul.classList.add('gl-widget-index-' + index);
-
-      const link = this._link(item.link);
-      ul.appendChild(link);
-
-      link.appendChild(this._itemTitle(item.title));
-      link.appendChild(this._image(item.media.m, index));
-      divItem.appendChild(link);
-      divItem.appendChild(this._author(item.author));
-      divItem.appendChild(this._dateTaken(item.date_taken));
-      div.appendChild(divItem);
+      widgetContainer.innerHTML += this._itemTemplate(item, index);
+      const authorElement = widgetContainer.querySelector('.gl-item-author');
+      authorElement.addEventListener('click', this._renderImagesByAuthor(item.author ,item.author_id));
     });
 
-    this.container.appendChild(div);
+    this.container.appendChild(widgetContainer);
   }
 
-  _image(imageSrc, index) {
-    if (imageSrc === undefined || index === undefined) {
-      return undefined
-    }
-    const img = document.createElement('img');
-    img.classList.add('gl-image');
-    img.classList.add('gl-img-' + index);
-    img.setAttribute('src', imageSrc);
-    return img
+  _itemTemplate(item, index) {
+    const authorName = this._parseAuthorName(item.author);
+    const date = this._parseDateString(item.date_taken);
+
+    return `
+    <div class="gl-widget-item">
+      <a href="${item.link}" target="_blank">
+        <p class="gl-item-txt-link">${item.title}</p>
+        <img src="${item.media.m}" class="gl-image gl-img-${index}">
+      </a>
+      <a href="#${authorName}" class="gl-item-author">${authorName}</a>
+      <p class="gl-item-date">${date}</p>
+    </div>  
+    `
   }
 
   _title() {
@@ -54,56 +47,19 @@ class Renderer {
     this.container.appendChild(node);
   }
 
-  _itemTitle(title) {
-    const para = document.createElement('p');
-    const text = title || 'Images From Flicker';
-    para.innerText = `${text}`;
-    para.classList.add('gl-item-txt-link');
-    return para;
-  }
-
-  _link(link) {
-    const a = document.createElement('a');
-    a.setAttribute('href', link);
-    a.setAttribute('target', '_blank');
-    return a;
-  }
-
-  _author(authorStr) {
-    const link = document.createElement('a');
-    const author = this._parseAuthorString(authorStr);
-    link.setAttribute('href', `#${author}`);
-    link.innerText = `${author}`;
-    link.classList.add('gl-item-author');
-    link.addEventListener('click', this._filterByAuthor.bind(this, author));
-
-    return link;
-  }
-
-  _parseAuthorString(authorStr) {
-    if (authorStr !== undefined) {
+  _parseAuthorName(authorTaken) {
+    if (authorTaken !== undefined) {
       const regExp = `"(.*?)"`;
-      const matches = authorStr.match(regExp);
-      return (matches !== null) ? matches[0].replace(`"`, ``).slice(0, -1) : authorStr;
+      const matches = authorTaken.match(regExp);
+      return (matches !== null) ? matches[0].replace(`"`, ``).slice(0, -1) : authorTaken;
     }
 
     return 'Unknown authors';
   }
 
-  _dateTaken(dateTakenStr) {
-    if (dateTakenStr === undefined) {
-      return undefined;
-    }
-
-    const para = document.createElement('p');
-    para.classList.add('gl-item-date');
-    para.innerText = this._parseDateString(dateTakenStr);
-    return para;
-  }
-
-  _parseDateString(dateTakenStr) {
-    if (dateTakenStr !== undefined) {
-      const date = new Date(dateTakenStr);
+  _parseDateString(dateTaken) {
+    if (dateTaken !== undefined) {
+      const date = new Date(dateTaken);
       const day = ('0' + date.getDate()).slice(-2);
       const month = ('0' + (date.getMonth() + 1)).slice(-2);
       const year = date.getFullYear();
@@ -112,27 +68,26 @@ class Renderer {
     return `Unknown Date`;
   }
 
-  _filterByAuthor(author) {
+  _renderImagesByAuthor(author, authorId) {
+    // console.log(authorId);
     this._res.items = this._res.items.filter((item) => {
       return item.author.indexOf(author) !== -1;
     });
 
-    window.addEventListener('hashchange', this._switchGalleryView.bind(this));
+    window.addEventListener('hashchange', this._switchGalleryView.bind(this, authorId));
   }
 
-  _switchGalleryView() {
+  _switchGalleryView(authorId) {
     this.container.innerHTML = ``;
     if (!window.location.href.includes(`#`)) {
       let flickerResponse = localStorage.getItem('flickerResponse');
       this.render(JSON.parse(flickerResponse)); // load the original res object
     } else {
-      gallery.getImagesByAuthor(this._res.items[0].author_id);
+      gallery.getImagesByAuthor(authorId);
     }
   }
 }
 
-const renderer = new Renderer();
-
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-  module.exports = renderer;
-}
+// if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+//   module.exports = renderer;
+// }

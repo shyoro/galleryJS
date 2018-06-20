@@ -20,5 +20,3 @@ class FlickerApi {
     });
   }
 }
-
-const flickerApi = new FlickerApi(jsonpService);
