@@ -117,10 +117,10 @@ class Renderer {
       return item.author.indexOf(author) !== -1;
     });
 
-    window.addEventListener('hashchange', this._hasChange.bind(this));
+    window.addEventListener('hashchange', this._switchGalleryViewByAuthor.bind(this));
   }
 
-  _hasChange() {
+  _switchGalleryViewByAuthor() {
     this.container.innerHTML = ``;
     if (!window.location.href.includes(`#`)) {
       let flickerResponse = localStorage.getItem('flickerResponse');
