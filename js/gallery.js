@@ -5,15 +5,28 @@ class Gallery {
   }
 
   init() {
-    this.flickerApi.getAllImages().then((res) => {
+    this.flickerApi.getImages().then((res) => {
       localStorage.setItem('flickerResponse', JSON.stringify(res));
-      this.renderService.render(res, this.getImagesByAuthor.bind(this));
+      document.innerHTML = this.renderService.render(res);
     });
   }
 
   getImagesByAuthor(authorId) {
-    this.flickerApi.getAuthorImages(authorId).then((res) => {
-      this.renderService.render(res);
-    })
+    window.addEventListener('hashchange', () => this._switchGalleryView(authorId));
+  }
+
+  _switchGalleryView(authorId) {
+    document.innerHTML  = ``;
+    if (!window.location.href.includes(`#${authorId}`)) {
+
+      //here we load original copy of images
+      const flickerResponse = localStorage.getItem('flickerResponse');
+      document.innerHTML = this.renderService.render(JSON.parse(flickerResponse));
+    } else {
+
+      this.flickerApi.getImages({id: authorId}).then((res) => {
+        document.innerHTML = this.renderService.render(res);
+      });
+    }
   }
 }

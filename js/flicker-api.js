@@ -4,19 +4,18 @@ class FlickerApi {
     this.jsonpService = jsonpService;
   }
 
-  getAllImages() {
+  getImages(filters) {
+    let flickerApiUrl = this.FLICKER_URL;
+
+    if (filters) {
+      let queryString = Object.keys(filters).map(key => key + '=' + filters[key]).join('&');
+      flickerApiUrl += `&${queryString}`
+    }
+
     return new Promise((resolve, reject) => {
-      this.jsonpService.call(this.FLICKER_URL, (res) => {
+      this.jsonpService.call(flickerApiUrl, (res) => {
         resolve(res);
       });
-    });
-  }
-
-  getAuthorImages(authorId) {
-    return new Promise((resolve, reject) => {
-      this.jsonpService.call(this.FLICKER_URL + `&id=${authorId}`,(res) => {
-        resolve(res);
-      })
     });
   }
 }
