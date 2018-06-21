@@ -1,12 +1,14 @@
 class Gallery {
+
   constructor(flickerApi, renderService) {
     this.flickerApi = flickerApi;
     this.renderService = renderService;
+    this.galleryResponse = "galleryResponse";
   }
 
   init() {
     this.flickerApi.getImages().then((res) => {
-      localStorage.setItem('flickerResponse', JSON.stringify(res));
+      localStorage.setItem(this.galleryResponse, JSON.stringify(res));
       document.innerHTML = this.renderService.render(res);
     });
   }
@@ -20,7 +22,7 @@ class Gallery {
     if (!window.location.href.includes(`#${authorId}`)) {
 
       //here we load original copy of images
-      const flickerResponse = localStorage.getItem('flickerResponse');
+      const flickerResponse = localStorage.getItem(this.galleryResponse);
       document.innerHTML = this.renderService.render(JSON.parse(flickerResponse));
     } else {
 
