@@ -3,32 +3,23 @@ class Gallery {
   constructor(flickerApi, renderService) {
     this.flickerApi = flickerApi;
     this.renderService = renderService;
-    this.galleryResponse = "galleryResponse";
   }
 
-  init() {
-    this.flickerApi.getImages().then((res) => {
-      localStorage.setItem(this.galleryResponse, JSON.stringify(res));
-      document.innerHTML = this.renderService.render(res);
+  init(galleryContainer) {
+    const authorId = location.hash ? location.hash.substring(1) : null;
+    this.galleryContainer = galleryContainer;
+    this.loadImages(authorId);
+
+    window.addEventListener('hashchange', () => {
+      this.loadImages(location.hash.substring(1));
     });
   }
 
-  getImagesByAuthor(authorId) {
-    window.addEventListener('hashchange', () => this._switchGalleryView(authorId));
-  }
+  loadImages(authorId) {
+    const filters = authorId ? {id: authorId} : null;
 
-  _switchGalleryView(authorId) {
-    document.innerHTML  = ``;
-    if (!window.location.href.includes(`#${authorId}`)) {
-
-      //here we load original copy of images
-      const flickerResponse = localStorage.getItem(this.galleryResponse);
-      document.innerHTML = this.renderService.render(JSON.parse(flickerResponse));
-    } else {
-
-      this.flickerApi.getImages({id: authorId}).then((res) => {
-        document.innerHTML = this.renderService.render(res);
-      });
-    }
+    this.flickerApi.getImages(filters).then((res) => {
+      document.querySelector(this.galleryContainer).innerHTML = this.renderService.render(res);
+    });
   }
 }

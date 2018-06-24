@@ -3,4 +3,4 @@ const flickerApi = new FlickerApi(jsonpService);
 const renderer = new Renderer();
 const gallery = new Gallery(flickerApi, renderer);
 
-gallery.init();
+gallery.init(`#GALLERY`);

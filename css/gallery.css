@@ -1,49 +1,49 @@
 
-
 body {
-    background-color: #eee;
+    background-color: #545454;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+a {
+    text-decoration: none;
+    color: #c9c9c9;
+}
+
+.gl-title {
+    text-align: center;
+    color: #c9c9c9;
 }
 
 .gl-widget {
-    display: flex;
-    border: 1px solid #ddd;
-    flex-flow: row wrap;
-    justify-content: space-between;
+    margin: 10px 50px;
+}
 
+.gl-widget-item {
+    display: inline-block;
+    margin-bottom: 30px;
 }
 
 .gl-widget img {
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    width: 236px;
+    height: 177px;
     padding: 5px;
-    width: 150px;
-    transition: transform .2s;
-}
-
-.gl-item-txt-link {
-    width: 250px;
-    margin-bottom: 2px;
-    margin-top: 2px;
-    padding-left: 2px;
+    transition: 0.2s;
 }
 
 .gl-widget img:hover {
-    box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
-    transform: scale(1.5);
+    transform: scale(1.2);
 }
 
-.gl-widget a {
-    padding-left: 2px;
-    padding-right: 10px;
-    color: black;
-    text-decoration: none;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    overflow: hidden;
+.gl-item-txt-link {
+    display: block;
+    width: 236px;
     font-size: 12px;
-}
-
-.gl-widget a:hover {
-    color: rgba(0, 140, 186, 0.5);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 2px;
+    margin-top: 2px;
+    padding-left: 2px;
 }
 
 .gl-item-author {
@@ -51,9 +51,9 @@ body {
 }
 
 .gl-item-date {
-    font-size: 13px;
-    padding: 2px 10px 2px 2px;
-    margin-top: 1px;
+    display: initial;
+    font-size: 12px;
+    color: #c9c9c9;
 }
 
 @media screen and (max-width: 500px) {

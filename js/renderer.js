@@ -1,27 +1,25 @@
 class Renderer {
 
   constructor() {
-    this.container  = document.getElementById('GALLERY');
+
   }
 
   render(res) {
-    this.container.innerHTML = this._title(res.title);
-    this._generateWidget(res.items);
-    return this.container.innerHTML;
+    let itemsHtml = '';
+
+    if (res.items && res.items.length) {
+      res.items.forEach((item) => {
+        itemsHtml += this._itemTemplate(item);
+      });
+    }
+
+    return `
+      <p class="gl-title">${res.title}</p>
+      <div class="gl-widget">${itemsHtml}</div>
+    `;
   }
 
-  _generateWidget(items) {
-    const widgetContainer = document.createElement('div');
-    widgetContainer.classList.add('gl-widget');
-
-    items.forEach((item, index) => {
-      widgetContainer.innerHTML += this._itemTemplate(item, index);
-    });
-
-    this.container.appendChild(widgetContainer);
-  }
-
-  _itemTemplate(item, index) {
+  _itemTemplate(item) {
     const authorName = this._parseAuthorName(item.author);
     const date = this._parseDate(item.date_taken);
 
@@ -29,16 +27,12 @@ class Renderer {
     <div class="gl-widget-item">
       <a href="${item.link}" target="_blank">
         <p class="gl-item-txt-link">${item.title}</p>
-        <img src="${item.media.m}" class="gl-image gl-img-${index}">
+        <img src="${item.media.m}" class="gl-image">
       </a>
-      <a href="#${item.author_id}" onclick="gallery.getImagesByAuthor('${item.author_id}');" class="gl-item-author">${authorName}</a>
+      <a href="#${item.author_id}" class="gl-item-author">${authorName}</a>
       <p class="gl-item-date">${date}</p>
     </div>  
     `
-  }
-
-  _title(title) {
-    return `<p class="gl-title">${title}</p>`
   }
 
   _parseAuthorName(authorTaken) {
